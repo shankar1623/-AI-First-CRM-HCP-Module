@@ -1,18 +1,9 @@
 # AI-First CRM — HCP Module: Log Interaction Screen
-
-An AI-first "Log HCP Interaction" screen for pharma field reps. The form on
-the left is **read-only** — it can only be filled or edited by talking to
-the AI assistant on the right. A LangGraph agent, backed by Groq LLMs,
-interprets free-text descriptions of a rep's visit/call with a Healthcare
-Professional (HCP) and calls tools that populate the form.
-
 ## Architecture
-
 ```
 frontend/   React 18 + Redux Toolkit (Vite) — split-screen UI
 backend/    FastAPI + LangGraph + Groq — chat + persistence API
 ```
-
 - **Frontend → Backend**: `POST /api/chat` sends the rep's message plus the
   current form state; the response contains the assistant's reply, the
   updated form fields, and which tool "badges" fired.
@@ -24,12 +15,7 @@ backend/    FastAPI + LangGraph + Groq — chat + persistence API
   to call) — looping until the LLM responds with plain text instead of a
   tool call.
 
-## Why llama-3.3-70b-versatile drives the agent
-
-The brief mandates `gemma2-9b-it`. Groq's API, however, does not currently
-support function/tool-calling for `gemma2-9b-it` — and this whole agent is
-built around tool-calling (the LLM must emit structured arguments so the 5
-tools can update specific form fields). So:
+:
 
 - `GROQ_MODEL=llama-3.3-70b-versatile` drives the LangGraph agent's tool
   calls (entity extraction + routing).
@@ -51,7 +37,7 @@ for `gemma2-9b-it` later — just flip `GROQ_MODEL`.
 2. **`edit_interaction`** — Corrects/amends specific fields only (e.g. "it
    was actually Dr. Rao, not Dr. Smith"). Every other field already on the
    form is left untouched.
-3. **`sentiment_analysis`** — Classifies the HCP's reaction (Positive /
+3. **`sentiment_analysis`** — Classifies the HCP's reaction (Positivgit adde /
    Neutral / Negative) from the wording of the message and sets the
    sentiment field + chip on the form.
 4. **`competitor_mention_tracker`** — Scans the message for competitor
@@ -80,14 +66,12 @@ message that both logs the interaction and mentions a competitor).
 
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+python -m venv .venv
 pip install -r requirements.txt
-# .env is already included with the provided Groq key + Neon Postgres URL.
-# Rotate the Groq key before any public/production use — it was shared in plaintext.
 uvicorn app.main:app --reload --port 8000
 ```
 
-The backend creates its tables automatically on startup (`Base.metadata.create_all`).
+
 
 ### Frontend
 
